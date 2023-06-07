@@ -1,0 +1,25 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Блог{% endblock %}
+
+{% block body %}
+<h1 class="text-center pt-3"> Блог с логированием на стороне Go </h1>
+<section class="articles">
+    {% for post in posts %}
+            <article class="p-4">
+                <div class="card mb-3">
+                    <h3 class="card-header">{{post.title}}</h3>
+                    <div class="card-body">
+                        <p class="card-text">опубликовано {{ post.publishedAt | date('d/m/Y')}} в {{post.publishedAt | date('H:i')}}</p>
+                    </div>
+                    <ul class="list-group list-group-flush">
+                        <li class="list-group-item">{{ post.content | raw | slice(0, 256) }}</li>
+                    </ul>
+                </div>
+                <a href="{{ path('blog_post', {'id': post.id})}}" class="btn btn-primary">читать</a>
+            </article>
+    {% endfor %}
+
+</section>
+
+{% endblock %}

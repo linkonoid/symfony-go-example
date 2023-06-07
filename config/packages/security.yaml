@@ -1,0 +1,86 @@
+security:
+    # a new authentication system is available since Symfony 5.1 to make
+    # Symfony security more extensible and easier to understand
+    # https://symfony.com/doc/current/security/experimental_authenticators.html
+    enable_authenticator_manager: true
+
+    # https://symfony.com/doc/current/security.html#registering-the-user-hashing-passwords
+    password_hashers:
+        App\Entity\User: 'auto'
+
+    # https://symfony.com/doc/current/security.html#loading-the-user-the-user-provider
+    providers:
+        app_database_users:
+            entity: { class: App\Entity\User, property: username }
+    firewalls:
+        dev:
+            pattern: ^/(_(profiler|wdt)|css|images|js)/
+            security: false
+        main:
+            http_basic: ~
+            lazy: true
+            provider: app_database_users
+
+            # activate different ways to authenticate
+            # https://symfony.com/doc/current/security.html#the-firewall
+
+            # https://symfony.com/doc/current/security/impersonating_user.html
+            # switch_user: true
+
+            # This allows the user to login by submitting a username and password
+            # Reference: https://symfony.com/doc/current/security/form_login_setup.html
+            form_login:
+                # The route name that the login form submits to
+                check_path: /login
+                # The name of the route where the login form lives
+                # When the user tries to access a protected page, they are redirected here
+                login_path: /login
+                # Secure the login form against CSRF
+                # Reference: https://symfony.com/doc/current/security/csrf.html
+                enable_csrf: true
+                # The page users are redirect to when there is no previous page stored in the
+                # session (for example when the users access directly to the login page).
+                default_target_path: /admin
+                always_use_default_target_path: true
+                failure_path: /login
+
+            logout:
+                # The route name the user can go to in order to logout
+                path: /logout
+                # The name of the route to redirect to after logging out
+                target: /blog
+                #clear_site_data:
+                #    - cache
+                #    - storage
+                #    - executionContexts 
+
+            # needed because in tests we redefine the 'main' firewall to use
+            # HTTP Basic instead of the login form, so this firewall has
+            # multiple authenticators
+            # See https://symfony.com/doc/current/security/experimental_authenticators.html#configuring-the-authentication-entry-point
+            entry_point: 'form_login'
+
+    # Easy way to control access for large sections of your site
+    # Note: Only the *first* access control that matches will be used
+    access_control:
+        #- { path: ^/admin, roles: ROLE_AUTHOR }
+        #- { path: ^/admin, roles: ROLE_MODERATOR }
+        #- { path: ^/admin, roles: ROLE_GUEST }      
+        #- { path: ^/profile, roles: ROLE_USER }
+        #- { path: ^/profile, roles: ROLE_MODERATOR }        
+
+    role_hierarchy:
+        #ROLE_AUTHOR: ROLE_MODERATOR
+
+when@test:
+    security:   
+        password_hashers:
+            # By default, password hashers are resource intensive and take time. This is
+            # important to generate secure password hashes. In tests however, secure hashes
+            # are not important, waste resources and increase test times. The following
+            # reduces the work factor to the lowest possible values.
+            Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface:
+                algorithm: auto
+                cost: 4 # Lowest possible value for bcrypt
+                time_cost: 3 # Lowest possible value for argon
+                memory_cost: 10 # Lowest possible value for argon

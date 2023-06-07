@@ -1,0 +1,17 @@
+{% extends 'base.html.twig' %}
+
+{% block body %}
+
+    <article class="p-4">
+        <div class="card mb-3 ">
+            <h3 class="card-header">{{post.title}}</h3>
+        <div class="card-body text-center">
+            <p class="card-text">опубликовано {{ post.publishedAt | date('d/m/Y')}} в {{post.publishedAt | date('H:i')}}</p>
+        </div>
+            <ul class="list-group list-group-flush">
+                <li class="list-group-item">{{post.content | raw}}</li>
+            </ul>
+        </div>
+    </article>
+
+{% endblock %}
