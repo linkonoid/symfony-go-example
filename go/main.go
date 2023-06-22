@@ -24,7 +24,6 @@ type postData struct {
 // все входящие запросы сюда и разбираем
 func (h *analyticsHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("content-type", "application/json")
-	postEndpointRegexp := regexp.MustCompile(`^\/analytics[\/]*$`)
 	logInfo := log.New(os.Stdout, "INFO\t", log.Ldate|log.Ltime)
 	switch {
 	case r.Method == http.MethodPost:
